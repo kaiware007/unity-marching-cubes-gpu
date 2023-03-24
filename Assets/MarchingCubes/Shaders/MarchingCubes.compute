@@ -6,6 +6,8 @@
 
 #pragma kernel MarchingCubes
 
+#define THREAD_SIZE 8
+
 Texture3D<float4> _densityTexture;
 float _isoLevel;
 int _gridSize;
@@ -13,7 +15,6 @@ int _gridSize;
 struct Vertex
 {
 	float3 vPosition;
-	float3 vNormal;
 };
 
 struct Triangle
@@ -348,7 +349,7 @@ float3 CalculateGradient(float3 p)
 		);
 }
 
-[numthreads(8, 8, 8)]
+[numthreads(THREAD_SIZE, THREAD_SIZE, THREAD_SIZE)]
 void MarchingCubes(uint3 threadId : SV_DispatchThreadID)
 {
 	float3 offset = float3(-0.5, -0.5, -0.5);
@@ -425,9 +426,9 @@ void MarchingCubes(uint3 threadId : SV_DispatchThreadID)
 			v1.vPosition = vertlist[triTable[cubeIndex][i + 1]];
 			v2.vPosition = vertlist[triTable[cubeIndex][i + 2]];
 
-			v0.vNormal = normalize(CalculateGradient(v0.vPosition));
-			v1.vNormal = normalize(CalculateGradient(v1.vPosition));
-			v2.vNormal = normalize(CalculateGradient(v2.vPosition));
+			// v0.vNormal = normalize(CalculateGradient(v0.vPosition));
+			// v1.vNormal = normalize(CalculateGradient(v1.vPosition));
+			// v2.vNormal = normalize(CalculateGradient(v2.vPosition));
 
 			t.v[0] = v0;
 			t.v[1] = v1;
